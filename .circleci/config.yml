@@ -17,13 +17,13 @@ jobs:
       - checkout
       # Use root level package.json to install dependencies in the frontend app
       - run:
-          name: Install Client Dependencies
+          name: Install udagram-frontend Dependencies
           command: |
-            cd ./udagram/client && npm install --legacy-peer-deps -f
+            cd ./udagram/udagram-frontend && npm install --legacy-peer-deps -f
       - run:
-          name: Install Server Dependencies
+          name: Install udagram-api Dependencies
           command: |
-            frontend:install
+            api:install
       - run:
           name: Front-End Build
           command: |
@@ -31,7 +31,7 @@ jobs:
       - run:
           name: API Build
           command: |
-            api:install
+            api:build
       - run:
           name: Install pip
           command: |
@@ -53,11 +53,11 @@ jobs:
       - aws-cli/setup
       - checkout
       - run:
-          name: Deploy server
+          name: Deploy udagram-api
           command: |
             api:deploy
       - run:
-          name: Deploy client
+          name: Deploy udagram-frontend
           command: |
             frontend:deploy
             
