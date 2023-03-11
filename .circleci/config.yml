@@ -27,11 +27,11 @@ jobs:
       - run:
           name: Front-End Build
           command: |
-            frontend:build
+            npm run frontend:build
       - run:
           name: API Build
           command: |
-            api:build
+            npm run api:build
       - run:
           name: Install pip
           command: |
@@ -55,11 +55,11 @@ jobs:
       - run:
           name: Deploy udagram-api
           command: |
-            api:deploy
+            npm run api:deploy
       - run:
           name: Deploy udagram-frontend
           command: |
-            frontend:deploy
+            npm run frontend:deploy
             
 workflows:
   udagram:
