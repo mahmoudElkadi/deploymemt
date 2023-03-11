@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Install udagram-api Dependencies
           command: |
-            bash api:install
+            npm run api:install
       - run:
           name: Front-End Build
           command: |
