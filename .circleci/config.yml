@@ -1,0 +1,78 @@
+version: 2.1
+orbs:
+  # orgs contain basc recipes and reproducible actions (install node, aws, etc.)
+  node: circleci/node@5.0.2
+  eb: circleci/aws-elastic-beanstalk@2.0.1
+  aws-cli: circleci/aws-cli@3.1.1
+  # different jobs are calles later in the workflows sections
+jobs:
+  build:
+    docker:
+      # the base image can run most needed actions with orbs
+      - image: "cimg/node:14.15"
+    steps:
+      # install node and checkout code
+      - node/install:
+          node-version: '14.15.0'         
+      - checkout
+      # Use root level package.json to install dependencies in the frontend app
+      - run:
+          name: Install Client Dependencies
+          command: |
+            cd ./udagram/client && npm install --legacy-peer-deps -f
+      - run:
+          name: Install Server Dependencies
+          command: |
+            frontend:install
+      - run:
+          name: Front-End Build
+          command: |
+            frontend:build
+      - run:
+          name: API Build
+          command: |
+            api:install
+      - run:
+          name: Install pip
+          command: |
+            sudo apt update
+            sudo apt install -y python3-pip python-dev
+      - run:
+          name: Install AWS dependencies
+          command: |
+            sudo pip install awsebcli
+            sudo pip install awscli
+  deploy:
+    docker:
+      - image: "cimg/base:stable"
+      # more setup needed for aws, node, elastic beanstalk
+    steps:
+      - node/install:
+          node-version: '14.15.0' 
+      - eb/setup
+      - aws-cli/setup
+      - checkout
+      - run:
+          name: Deploy server
+          command: |
+            api:deploy
+      - run:
+          name: Deploy client
+          command: |
+            frontend:deploy
+            
+workflows:
+  udagram:
+    jobs:
+      - build
+      - hold:
+          filters:
+            branches:
+              only:
+                - main
+          type: approval
+          requires:
+            - build
+      - deploy:
+          requires:
+            - hold
